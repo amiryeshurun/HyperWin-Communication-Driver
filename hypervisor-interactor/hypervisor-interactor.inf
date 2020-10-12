@@ -1,0 +1,87 @@
+;
+; hypervisor-interactor.inf
+;
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=Sample ; TODO: edit Class
+ClassGuid={78A1C341-4539-11d3-B88D-00C04FAD5171} ; TODO: edit ClassGuid
+Provider=%ManufacturerName%
+CatalogFile=hypervisor-interactor.cat
+DriverVer= ; TODO: set DriverVer in stampinf property pages
+PnpLockDown=1
+
+[DestinationDirs]
+DefaultDestDir = 12
+hypervisor-interactor_Device_CoInstaller_CopyFiles = 11
+
+; ================= Class section =====================
+
+[ClassInstall32]
+Addreg=SampleClassReg
+
+[SampleClassReg]
+HKR,,,0,%ClassName%
+HKR,,Icon,,-5
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+hypervisor-interactor.sys  = 1,,
+WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll=1 ; make sure the number matches with SourceDisksNames
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName%=Standard,NT$ARCH$
+
+[Standard.NT$ARCH$]
+%hypervisor-interactor.DeviceDesc%=hypervisor-interactor_Device, Root\hypervisor-interactor ; TODO: edit hw-id
+
+[hypervisor-interactor_Device.NT]
+CopyFiles=Drivers_Dir
+
+[Drivers_Dir]
+hypervisor-interactor.sys
+
+;-------------- Service installation
+[hypervisor-interactor_Device.NT.Services]
+AddService = hypervisor-interactor,%SPSVCINST_ASSOCSERVICE%, hypervisor-interactor_Service_Inst
+
+; -------------- hypervisor-interactor driver install sections
+[hypervisor-interactor_Service_Inst]
+DisplayName    = %hypervisor-interactor.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\hypervisor-interactor.sys
+
+;
+;--- hypervisor-interactor_Device Coinstaller installation ------
+;
+
+[hypervisor-interactor_Device.NT.CoInstallers]
+AddReg=hypervisor-interactor_Device_CoInstaller_AddReg
+CopyFiles=hypervisor-interactor_Device_CoInstaller_CopyFiles
+
+[hypervisor-interactor_Device_CoInstaller_AddReg]
+HKR,,CoInstallers32,0x00010000, "WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll,WdfCoInstaller"
+
+[hypervisor-interactor_Device_CoInstaller_CopyFiles]
+WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll
+
+[hypervisor-interactor_Device.NT.Wdf]
+KmdfService =  hypervisor-interactor, hypervisor-interactor_wdfsect
+[hypervisor-interactor_wdfsect]
+KmdfLibraryVersion = $KMDFVERSION$
+
+[Strings]
+SPSVCINST_ASSOCSERVICE= 0x00000002
+ManufacturerName="<Your manufacturer name>" ;TODO: Replace with your manufacturer name
+ClassName="Samples" ; TODO: edit ClassName
+DiskName = "hypervisor-interactor Installation Disk"
+hypervisor-interactor.DeviceDesc = "hypervisor-interactor Device"
+hypervisor-interactor.SVCDESC = "hypervisor-interactor Service"
