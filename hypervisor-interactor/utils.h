@@ -1,5 +1,5 @@
-#ifndef __HV_UTILS_H_
-#define __HV_UTILS_H_
+#ifndef __HYPERWIN_UTILS_H_
+#define __HYPERWINS_UTILS_H_
 
 #include <ntddk.h>
 

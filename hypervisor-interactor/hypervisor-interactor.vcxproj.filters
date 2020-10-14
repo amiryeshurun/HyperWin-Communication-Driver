@@ -30,6 +30,9 @@
     <ClCompile Include="utils.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="drvops.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils.h">
@@ -38,16 +41,14 @@
     <ClInclude Include="hyperwin_structs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="driver_operations.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="hyperwin_types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="driver_operations.c">
-      <Filter>Source Files</Filter>
-    </None>
+    <ClInclude Include="x86_64.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="drvops.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

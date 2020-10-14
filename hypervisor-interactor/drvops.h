@@ -1,5 +1,5 @@
-#ifndef __HV_DRIVER_OPERATIONS_H_
-#define __HV_DRIVER_OPERATIONS_H_
+#ifndef __HYPERWIN_DRVOPS_H_
+#define __HYPERWIN_DRVOPS_H_
 
 #include <ntddk.h>
 

@@ -150,16 +150,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="driver_entry.c" />
+    <ClCompile Include="drvops.c" />
     <ClCompile Include="utils.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="driver_operations.h" />
+    <ClInclude Include="drvops.h" />
     <ClInclude Include="hyperwin_structs.h" />
     <ClInclude Include="hyperwin_types.h" />
     <ClInclude Include="utils.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="driver_operations.c" />
+    <ClInclude Include="x86_64.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
