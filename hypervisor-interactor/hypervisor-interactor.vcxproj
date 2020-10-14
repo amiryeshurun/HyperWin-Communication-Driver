@@ -155,7 +155,7 @@
   <ItemGroup>
     <ClInclude Include="driver_operations.h" />
     <ClInclude Include="hyperwin_structs.h" />
-    <ClInclude Include="types.h" />
+    <ClInclude Include="hyperwin_types.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>

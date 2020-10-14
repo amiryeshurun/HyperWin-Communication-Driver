@@ -13,8 +13,9 @@ NTSTATUS DriverUnload(IN PDRIVER_OBJECT pDriverObj)
 	return STATUS_SUCCESS;
 }
 
-NTSTATUS DriverEntry(IN PDRIVER_OBJECT pDriverObj, IN PUNICODE_STRING regPath)
+NTSTATUS DriverEntry(IN PDRIVER_OBJECT pDriverObj, IN PUNICODE_STRING RegPath)
 {
+	UNREFERENCED_PARAMETER(RegPath);
 	hvPrint("Loading driver...\n");
 	RtlInitUnicodeString(&deviceName, L"\\Device\\HyperWin");
 	RtlInitUnicodeString(&dosDeviceName, L"\\DosDevice\\HyperWin");
@@ -28,12 +29,12 @@ NTSTATUS DriverEntry(IN PDRIVER_OBJECT pDriverObj, IN PUNICODE_STRING regPath)
 		FILE_DEVICE_UNKNOWN,
 		FILE_DEVICE_SECURE_OPEN,
 		FALSE,
-		pDeviceObject) != STATUS_SUCCESS)
+		&pDeviceObject) != STATUS_SUCCESS)
 	{
 		hvPrint("Could not create a device\n");
 		return STATUS_FAILED_DRIVER_ENTRY;
 	}
-
+	pDriverObj->DriverUnload = DriverUnload;
 	PHYPERWIN_MAIN_DATA pMainData = (PHYPERWIN_MAIN_DATA)pDeviceObject->DeviceExtension;
 	pMainData->CommunicationBlockSize = 0;
 	pMainData->PhysicalCommunicationBaseAddress = 0;

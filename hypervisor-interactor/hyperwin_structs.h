@@ -1,12 +1,13 @@
 #ifndef __HYPERWIN_STRUCTS_H_
 #define __HYPERWIN_STRUCTS_H_
 
-#include "types.h"
+#include <ntddk.h>
+#include "hyperwin_types.h"
 
 typedef struct _HYPERWIN_MAIN_DATA
 {
-	QWORD PhysicalCommunicationBaseAddress;
-	QWORD CommunicationBlockSize;
+	DWORD64 PhysicalCommunicationBaseAddress;
+	DWORD64 CommunicationBlockSize;
 	BOOLEAN IsMapped;
 	BYTE_PTR VirtualCommunicationBlockAddress;
 	BOOLEAN IsInOperation;

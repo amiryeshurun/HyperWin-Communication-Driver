@@ -12,7 +12,7 @@ DriverVer= ; TODO: set DriverVer in stampinf property pages
 PnpLockDown=1
 
 [DestinationDirs]
-DefaultDestDir = 12
+DefaultDestDir = 13
 hypervisor-interactor_Device_CoInstaller_CopyFiles = 11
 
 ; ================= Class section =====================

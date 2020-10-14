@@ -38,10 +38,10 @@
     <ClInclude Include="hyperwin_structs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="types.h">
+    <ClInclude Include="driver_operations.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="driver_operations.h">
+    <ClInclude Include="hyperwin_types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
