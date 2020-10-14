@@ -1,6 +1,7 @@
 #include <ntddk.h>
 #include "utils.h"
 #include "hyperwin_structs.h"
+#include "drvops.h"
 
 UNICODE_STRING deviceName, dosDeviceName;
 
@@ -42,5 +43,11 @@ NTSTATUS DriverEntry(IN PDRIVER_OBJECT pDriverObj, IN PUNICODE_STRING RegPath)
 	KeInitializeSpinLock(&(pMainData->OperationSpinLock));
 
 	hvPrint("Driver loaded successfully\n");
+
+	//
+	// This section is here temporarly, for tests only
+	//
+	HyperWinCreate(pDeviceObject, NULL);
+
 	return STATUS_SUCCESS;
 }
