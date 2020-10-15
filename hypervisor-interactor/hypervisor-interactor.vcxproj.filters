@@ -24,24 +24,21 @@
     </Inf>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="driver_entry.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="utils.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="drvops.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="drventry.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="comblock.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="hyperwin_structs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="hyperwin_types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="x86_64.h">
@@ -50,5 +47,28 @@
     <ClInclude Include="drvops.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="vmmintr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hwstatus.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hwstrcts.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hwtypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="comblock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hwops.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <MASM Include="vmmintr.asm">
+      <Filter>Source Files</Filter>
+    </MASM>
   </ItemGroup>
 </Project>

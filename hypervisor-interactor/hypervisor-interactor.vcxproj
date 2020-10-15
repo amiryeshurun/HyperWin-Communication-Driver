@@ -149,16 +149,24 @@
     <FilesToPackage Include="$(TargetPath)" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="driver_entry.c" />
+    <ClCompile Include="comblock.c" />
+    <ClCompile Include="drventry.c" />
     <ClCompile Include="drvops.c" />
     <ClCompile Include="utils.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="comblock.h" />
     <ClInclude Include="drvops.h" />
-    <ClInclude Include="hyperwin_structs.h" />
-    <ClInclude Include="hyperwin_types.h" />
+    <ClInclude Include="hwops.h" />
+    <ClInclude Include="hwstatus.h" />
+    <ClInclude Include="hwstrcts.h" />
+    <ClInclude Include="hwtypes.h" />
     <ClInclude Include="utils.h" />
+    <ClInclude Include="vmmintr.h" />
     <ClInclude Include="x86_64.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <MASM Include="vmmintr.asm" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
