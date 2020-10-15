@@ -1,7 +1,10 @@
 #include "drvops.h"
-#include "hyperwin_structs.h"
+#include "hwstrcts.h"
 #include "utils.h"
 #include "x86_64.h"
+#include "vmmintr.h"
+#include "hwstatus.h"
+#include "comblock.h"
 
 NTSTATUS HyperWinCreate(IN PDEVICE_OBJECT pDeviceObj, IN PIRP Irp)
 {
@@ -11,6 +14,7 @@ NTSTATUS HyperWinCreate(IN PDEVICE_OBJECT pDeviceObj, IN PIRP Irp)
 	//
 	UNREFERENCED_PARAMETER(Irp);
 	PHYPERWIN_MAIN_DATA pData = (PHYPERWIN_MAIN_DATA)pDeviceObj->DeviceExtension;
+	NTSTATUS NtStatus = STATUS_SUCCESS;
 	if (!(pData->IsMapped))
 	{
 		KIRQL OldIrql;
@@ -34,8 +38,13 @@ NTSTATUS HyperWinCreate(IN PDEVICE_OBJECT pDeviceObj, IN PIRP Irp)
 		pa.QuadPart = PhysicalAddress;
 		pData->VirtualCommunicationBlockAddress = MmMapIoSpace(pa, LARGE_PAGE_SIZE, MmCached);
 		hvPrint("Kernel virtual address: %llx\n", (DWORD64)pData->VirtualCommunicationBlockAddress);
+		if (ComSendInitSignal(pData->VirtualCommunicationBlockAddress))
+		{
+			hvPrint("Failed to send an INIT signal to hypervisor\n");
+			NtStatus = STATUS_DRIVER_BLOCKED_CRITICAL;
+		}
 		KeReleaseSpinLock(&(pData->OperationSpinLock), OldIrql);
 	}
 
-	return STATUS_SUCCESS;
+	return NtStatus;
 }
