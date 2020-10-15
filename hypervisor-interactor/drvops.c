@@ -20,6 +20,9 @@ NTSTATUS HyperWinCreate(IN PDEVICE_OBJECT pDeviceObj, IN PIRP Irp)
 		//
 		// The hypervisor will store the result in EDX:EAX
 		//
+#if DEBUG_LEVEL == 3
+		hvPrint("CPUID result: %lx %lx %lx %lx\n", Values[0], Values[1], Values[2], Values[3]);
+#endif
 		DWORD64 PhysicalAddress = ((DWORD64)Values[3] << 32) | (Values[0]);
 		hvPrint("Got physical address: %llx\n", PhysicalAddress);
 		pData->PhysicalCommunicationBaseAddress = PhysicalAddress;

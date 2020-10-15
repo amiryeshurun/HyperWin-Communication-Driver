@@ -2,13 +2,19 @@
 #include "utils.h"
 #include "hyperwin_structs.h"
 #include "drvops.h"
+#include "x86_64.h"
 
 UNICODE_STRING deviceName, dosDeviceName;
 
 NTSTATUS DriverUnload(IN PDRIVER_OBJECT pDriverObj)
 {
 	hvPrint("Unloading driver...\n");
-
+	//
+	// Unmap memory used for communicating with HyperWin
+	//
+	if(((PHYPERWIN_MAIN_DATA)pDriverObj->DeviceObject->DeviceExtension)->IsMapped)
+		MmUnmapIoSpace(((PHYPERWIN_MAIN_DATA)pDriverObj->DeviceObject->DeviceExtension)->VirtualCommunicationBlockAddress, 
+			LARGE_PAGE_SIZE);
 	IoDeleteSymbolicLink(&dosDeviceName);
 	IoDeleteDevice(pDriverObj->DeviceObject);
 	return STATUS_SUCCESS;
