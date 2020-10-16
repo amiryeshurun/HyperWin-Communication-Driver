@@ -8,6 +8,7 @@
 //
 #define VMCALL_COMMUNICATION_BLOCK 0x487970657257696e
 
-extern HWSTATUS HyperWinVmCall(IN DWORD64 HyperwinRax);
+extern HWSTATUS HyperWinVmCall(IN DWORD64 HyperwinRax, IN DWORD64 comminucationOffset);
+HWSTATUS ComSendSignal(IN DWORD64 CommunicationOffset);
 
 #endif

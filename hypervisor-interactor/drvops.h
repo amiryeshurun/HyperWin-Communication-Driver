@@ -4,5 +4,6 @@
 #include <ntddk.h>
 
 NTSTATUS HyperWinCreate(IN PDEVICE_OBJECT pDeviceObj, IN PIRP Irp);
+NTSTATUS HyperWinDeviceIoControl(IN PDEVICE_OBJECT pDeviceObj, IN PIRP Irp);
 
 #endif

@@ -2,9 +2,8 @@
 #include "hwtypes.h"
 #include "utils.h"
 #include "x86_64.h"
-#include "vmmintr.h"
 #include "hwstatus.h"
-#include "comblock.h"
+#include "vmmintr.h"
 
 NTSTATUS HyperWinCreate(IN PDEVICE_OBJECT pDeviceObj, IN PIRP Irp)
 {
@@ -37,14 +36,14 @@ NTSTATUS HyperWinCreate(IN PDEVICE_OBJECT pDeviceObj, IN PIRP Irp)
 		PHYSICAL_ADDRESS pa;
 		pa.QuadPart = PhysicalAddress;
 		pData->VirtualCommunicationBlockAddress = MmMapIoSpace(pa, LARGE_PAGE_SIZE, MmCached);
-		hvPrint("Kernel virtual address: %llx\n", (DWORD64)pData->VirtualCommunicationBlockAddress);
-		if (ComSendInitSignal(pData->VirtualCommunicationBlockAddress))
-		{
-			hvPrint("Failed to send an INIT signal to hypervisor\n");
-			NtStatus = STATUS_DRIVER_BLOCKED_CRITICAL;
-		}
+		pData->CurrentOffsetInBlock = 0;
 		KeReleaseSpinLock(&(pData->OperationSpinLock), OldIrql);
 	}
 
 	return NtStatus;
+}
+
+NTSTATUS HyperWinDeviceIoControl(IN PDEVICE_OBJECT pDeviceObj, IN PIRP Irp)
+{
+
 }

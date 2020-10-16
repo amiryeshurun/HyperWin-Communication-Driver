@@ -149,12 +149,11 @@
     <FilesToPackage Include="$(TargetPath)" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="comblock.c" />
+    <ClCompile Include="vmmintr.c" />
     <ClCompile Include="drventry.c" />
     <ClCompile Include="drvops.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="comblock.h" />
     <ClInclude Include="drvops.h" />
     <ClInclude Include="hwstatus.h" />
     <ClInclude Include="hwtypes.h" />

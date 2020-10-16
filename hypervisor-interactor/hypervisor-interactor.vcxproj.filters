@@ -30,7 +30,7 @@
     <ClCompile Include="drventry.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="comblock.c">
+    <ClCompile Include="vmmintr.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -48,9 +48,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="hwstatus.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="comblock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="hwtypes.h">

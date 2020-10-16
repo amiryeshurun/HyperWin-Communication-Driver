@@ -4,6 +4,8 @@ PUBLIC HyperWinVmCall
 HyperWinVmCall PROC PUBLIC
 
 mov rax, rcx
+mov rbx, rdx
+
 vmcall
 
 ret
