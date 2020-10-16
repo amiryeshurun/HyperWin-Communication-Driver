@@ -41,7 +41,15 @@ NTSTATUS DriverEntry(IN PDRIVER_OBJECT pDriverObj, IN PUNICODE_STRING RegPath)
 		hvPrint("Could not create a device\n");
 		return STATUS_FAILED_DRIVER_ENTRY;
 	}
+	pDeviceObject->Flags &= (~DO_DEVICE_INITIALIZING);
+
+	for (DWORD64 i = 0; i < IRP_MJ_MAXIMUM_FUNCTION; i++)
+		pDriverObj->MajorFunction[i] = HyperWinUnsupported;
+	pDriverObj->MajorFunction[IRP_MJ_CREATE] = HyperWinCreate;
+	pDriverObj->MajorFunction[IRP_MJ_DEVICE_CONTROL] = HyperWinDeviceIoControl;
+	pDriverObj->MajorFunction[IRP_MJ_CLOSE] = HyperWinClose;
 	pDriverObj->DriverUnload = DriverUnload;
+
 	PHYPERWIN_MAIN_DATA pMainData = (PHYPERWIN_MAIN_DATA)pDeviceObject->DeviceExtension;
 	pMainData->CommunicationBlockSize = 0;
 	pMainData->PhysicalCommunicationBaseAddress = 0;

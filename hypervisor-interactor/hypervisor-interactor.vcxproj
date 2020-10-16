@@ -162,7 +162,7 @@
     <ClInclude Include="x86_64.h" />
   </ItemGroup>
   <ItemGroup>
-    <MASM Include="vmmintr.asm" />
+    <MASM Include="vmmintr_asm.asm" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

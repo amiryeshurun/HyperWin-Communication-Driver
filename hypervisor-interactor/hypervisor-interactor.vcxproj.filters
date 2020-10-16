@@ -55,7 +55,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <MASM Include="vmmintr.asm">
+    <MASM Include="vmmintr_asm.asm">
       <Filter>Source Files</Filter>
     </MASM>
   </ItemGroup>
