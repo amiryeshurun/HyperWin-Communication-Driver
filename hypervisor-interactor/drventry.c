@@ -12,9 +12,13 @@ NTSTATUS DriverUnload(IN PDRIVER_OBJECT pDriverObj)
 	//
 	// Unmap memory used for communicating with HyperWin
 	//
-	if(((PHYPERWIN_MAIN_DATA)pDriverObj->DeviceObject->DeviceExtension)->IsMapped)
-		MmUnmapIoSpace(((PHYPERWIN_MAIN_DATA)pDriverObj->DeviceObject->DeviceExtension)->VirtualCommunicationBlockAddress, 
+	if (((PHYPERWIN_MAIN_DATA)pDriverObj->DeviceObject->DeviceExtension)->IsMapped)
+	{
+		MmUnmapIoSpace(((PHYPERWIN_MAIN_DATA)pDriverObj->DeviceObject->DeviceExtension)->VirtualWritePipe,
 			LARGE_PAGE_SIZE);
+		MmUnmapIoSpace(((PHYPERWIN_MAIN_DATA)pDriverObj->DeviceObject->DeviceExtension)->VirtualReadPipe,
+			LARGE_PAGE_SIZE);
+	}
 	IoDeleteSymbolicLink(&dosDeviceName);
 	IoDeleteDevice(pDriverObj->DeviceObject);
 	return STATUS_SUCCESS;
@@ -51,10 +55,10 @@ NTSTATUS DriverEntry(IN PDRIVER_OBJECT pDriverObj, IN PUNICODE_STRING RegPath)
 	pDriverObj->DriverUnload = DriverUnload;
 
 	PHYPERWIN_MAIN_DATA pMainData = (PHYPERWIN_MAIN_DATA)pDeviceObject->DeviceExtension;
-	pMainData->CommunicationBlockSize = 0;
-	pMainData->PhysicalCommunicationBaseAddress = 0;
+	pMainData->WritePipeSize = 0;
+	pMainData->PhysicalWritePipe = 0;
 	pMainData->IsMapped = FALSE;
-	KeInitializeSpinLock(&(pMainData->OperationSpinLock));
+	KeInitializeSpinLock(&(pMainData->WritePipeSpinlock));
 
 	hvPrint("Driver loaded successfully\n");
 

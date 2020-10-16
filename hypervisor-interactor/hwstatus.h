@@ -5,5 +5,6 @@
 
 #define HYPERWIN_STATUS_SUCCUESS 0
 #define HYPERWIN_INIT_FAILED     1
+#define HYPERWIN_DONE			 2
 
 #endif

@@ -10,12 +10,15 @@ typedef DWORD64* DWORD64_PTR;
 
 typedef struct _HYPERWIN_MAIN_DATA
 {
-	DWORD64 PhysicalCommunicationBaseAddress;
-	DWORD64 CommunicationBlockSize;
-	DWORD64 CurrentOffsetInBlock;
+	DWORD64 PhysicalWritePipe;
+	BYTE_PTR VirtualWritePipe;
+	DWORD64 WritePipeSize;
+	DWORD64 PhysicalReadPipe;
+	BYTE_PTR VirtualReadPipe;
+	DWORD64 ReadPipeSize;
+	DWORD64 CurrentWriteOffset;
 	BOOLEAN IsMapped;
-	BYTE_PTR VirtualCommunicationBlockAddress;
-	KSPIN_LOCK OperationSpinLock;
+	KSPIN_LOCK WritePipeSpinlock;
 } HYPERWIN_MAIN_DATA, *PHYPERWIN_MAIN_DATA;
 
 #endif

@@ -17,7 +17,7 @@ NTSTATUS HyperWinCreate(IN PDEVICE_OBJECT pDeviceObj, IN PIRP Irp)
 	if (!(pData->IsMapped))
 	{
 		KIRQL OldIrql;
-		KeAcquireSpinLock(&(pData->OperationSpinLock), &OldIrql);
+		KeAcquireSpinLock(&(pData->WritePipeSpinlock), &OldIrql);
 		int Values[4];
 		__cpuidex(Values, 0x40020020, 0);
 		//
@@ -28,16 +28,29 @@ NTSTATUS HyperWinCreate(IN PDEVICE_OBJECT pDeviceObj, IN PIRP Irp)
 #endif
 		DWORD64 PhysicalAddress = ((DWORD64)Values[3] << 32) | (Values[0]);
 		hvPrint("Got physical address: %llx\n", PhysicalAddress);
-		pData->PhysicalCommunicationBaseAddress = PhysicalAddress;
-		pData->CommunicationBlockSize = LARGE_PAGE_SIZE;
+		pData->PhysicalWritePipe = PhysicalAddress;
+		pData->WritePipeSize = LARGE_PAGE_SIZE;
 		//
 		// Map the memory to the kernel's virtual address
 		//
 		PHYSICAL_ADDRESS pa;
 		pa.QuadPart = PhysicalAddress;
-		pData->VirtualCommunicationBlockAddress = MmMapIoSpace(pa, LARGE_PAGE_SIZE, MmCached);
-		pData->CurrentOffsetInBlock = 0;
-		KeReleaseSpinLock(&(pData->OperationSpinLock), OldIrql);
+		pData->VirtualWritePipe = MmMapIoSpace(pa, LARGE_PAGE_SIZE, MmCached);
+		pData->CurrentWriteOffset = 0;
+		//
+		// Get memory address for HyperWin responses
+		//
+		__cpuidex(Values, 0x40040040, 0);
+#if DEBUG_LEVEL == 3
+		hvPrint("CPUID result: %lx %lx %lx %lx\n", Values[0], Values[1], Values[2], Values[3]);
+#endif
+		PhysicalAddress = ((DWORD64)Values[3] << 32) | (Values[0]);
+		hvPrint("Got physical address: %llx\n", PhysicalAddress);
+		pData->PhysicalReadPipe = PhysicalAddress;
+		pData->ReadPipeSize = LARGE_PAGE_SIZE;
+		pa.QuadPart = PhysicalAddress;
+		pData->VirtualReadPipe = MmMapIoSpace(pa, LARGE_PAGE_SIZE, MmCached);
+		KeReleaseSpinLock(&(pData->WritePipeSpinlock), OldIrql);
 	}
 
 	return NtStatus;
@@ -58,26 +71,35 @@ NTSTATUS HyperWinDeviceIoControl(IN PDEVICE_OBJECT pDeviceObj, IN PIRP Irp)
 		{
 			hvPrint("Received ctl code: %xl\n", CTL_CODE_HW);
 			KIRQL Irql;
-			KeAcquireSpinLock(&(pData->OperationSpinLock), &Irql);
-			if (pData->CurrentOffsetInBlock + pStackLocation->Parameters.DeviceIoControl.InputBufferLength <
-				pData->CommunicationBlockSize)
-				pData->CurrentOffsetInBlock += pStackLocation->Parameters.DeviceIoControl.InputBufferLength;
+			KeAcquireSpinLock(&(pData->WritePipeSpinlock), &Irql);
+			if (pData->CurrentWriteOffset + pStackLocation->Parameters.DeviceIoControl.InputBufferLength <
+				pData->WritePipeSize)
+				pData->CurrentWriteOffset += pStackLocation->Parameters.DeviceIoControl.InputBufferLength;
 			else
-				pData->CurrentOffsetInBlock = 0;
-			RtlCopyMemory(pData->VirtualCommunicationBlockAddress + pData->CurrentOffsetInBlock, 
+				pData->CurrentWriteOffset = 0;
+			RtlCopyMemory(pData->VirtualWritePipe + pData->CurrentWriteOffset, 
 					SystemBuffer, pStackLocation->Parameters.DeviceIoControl.InputBufferLength);
-			if(ComSendSignal(pData->CurrentOffsetInBlock) != HYPERWIN_STATUS_SUCCUESS)
+			if(ComSendSignal(pData->CurrentWriteOffset) != HYPERWIN_STATUS_SUCCUESS)
 			{
 				NtStatus = STATUS_FAIL_FAST_EXCEPTION;
 				goto DeviceIoControlExit;
 			}
 			//
-			// HypeWin sent a response
+			// HypeWin sent a response?
 			//
-			if (*(DWORD64_PTR)(pData->VirtualCommunicationBlockAddress + pData->CurrentOffsetInBlock))
+			DWORD64 ReadOffset = 0;
+			if ((ReadOffset = *(DWORD64_PTR)(pData->VirtualWritePipe + pData->CurrentWriteOffset))
+				!= HYPERWIN_DONE)
 			{
-
+				DWORD64 ReadLength = *(DWORD64_PTR)(pData->VirtualWritePipe + pData->CurrentWriteOffset + sizeof(DWORD64));
+				RtlCopyMemory(pData->VirtualReadPipe + ReadOffset, SystemBuffer, ReadLength);
+				Irp->IoStatus.Information = ReadLength;
 			}
+			break;
+		}
+		default:
+		{
+			hvPrint("Unkown IOCTL code was sent: %xl\n", pStackLocation->Parameters.DeviceIoControl.IoControlCode);
 		}
 	}
 
