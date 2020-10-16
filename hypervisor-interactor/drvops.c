@@ -1,5 +1,5 @@
 #include "drvops.h"
-#include "hwstrcts.h"
+#include "hwtypes.h"
 #include "utils.h"
 #include "x86_64.h"
 #include "vmmintr.h"

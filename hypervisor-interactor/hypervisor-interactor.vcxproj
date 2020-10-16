@@ -152,14 +152,11 @@
     <ClCompile Include="comblock.c" />
     <ClCompile Include="drventry.c" />
     <ClCompile Include="drvops.c" />
-    <ClCompile Include="utils.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="comblock.h" />
     <ClInclude Include="drvops.h" />
-    <ClInclude Include="hwops.h" />
     <ClInclude Include="hwstatus.h" />
-    <ClInclude Include="hwstrcts.h" />
     <ClInclude Include="hwtypes.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="vmmintr.h" />

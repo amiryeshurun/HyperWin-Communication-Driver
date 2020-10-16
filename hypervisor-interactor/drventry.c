@@ -1,6 +1,6 @@
 #include <ntddk.h>
 #include "utils.h"
-#include "hwstrcts.h"
+#include "hwtypes.h"
 #include "drvops.h"
 #include "x86_64.h"
 

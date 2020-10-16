@@ -24,9 +24,6 @@
     </Inf>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="utils.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="drvops.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -53,16 +50,10 @@
     <ClInclude Include="hwstatus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="hwstrcts.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="hwtypes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="comblock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="hwops.h">
+    <ClInclude Include="hwtypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
