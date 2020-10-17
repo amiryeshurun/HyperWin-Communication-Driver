@@ -77,6 +77,7 @@ NTSTATUS HyperWinDeviceIoControl(IN PDEVICE_OBJECT pDeviceObj, IN PIRP Irp)
 				pData->CurrentWriteOffset += pStackLocation->Parameters.DeviceIoControl.InputBufferLength;
 			else
 				pData->CurrentWriteOffset = 0;
+			KeReleaseSpinLock(&(pData->WritePipeSpinlock), Irql);
 			RtlCopyMemory(pData->VirtualWritePipe + pData->CurrentWriteOffset, 
 					SystemBuffer, pStackLocation->Parameters.DeviceIoControl.InputBufferLength);
 			if(ComSendSignal(pData->CurrentWriteOffset) != HYPERWIN_STATUS_SUCCUESS)
@@ -89,7 +90,7 @@ NTSTATUS HyperWinDeviceIoControl(IN PDEVICE_OBJECT pDeviceObj, IN PIRP Irp)
 			//
 			DWORD64 ReadOffset = 0;
 			if ((ReadOffset = *(DWORD64_PTR)(pData->VirtualWritePipe + pData->CurrentWriteOffset))
-				!= HYPERWIN_DONE)
+				!= OPERATION_COMPLETED)
 			{
 				DWORD64 ReadLength = *(DWORD64_PTR)(pData->VirtualWritePipe + pData->CurrentWriteOffset + sizeof(DWORD64));
 				RtlCopyMemory(pData->VirtualReadPipe + ReadOffset, SystemBuffer, ReadLength);
