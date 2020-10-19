@@ -65,7 +65,6 @@ NTSTATUS DriverEntry(IN PDRIVER_OBJECT pDriverObj, IN PUNICODE_STRING RegPath)
 	//
 	// This section is here temporarly, for tests only
 	//
-	HyperWinCreate(pDeviceObject, NULL);
 
 	return STATUS_SUCCESS;
 }
