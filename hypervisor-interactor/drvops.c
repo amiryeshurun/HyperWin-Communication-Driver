@@ -18,6 +18,12 @@ NTSTATUS HyperWinCreate(IN PDEVICE_OBJECT pDeviceObj, IN PIRP Irp)
 	{
 		KIRQL OldIrql;
 		KeAcquireSpinLock(&(pData->WritePipeSpinlock), &OldIrql);
+		//
+		// Double lock checking
+		//
+		if (pData->IsMapped)
+			goto Mapped;
+		pData->IsMapped = TRUE;
 		int Values[4];
 		__cpuidex(Values, 0x40020020, 0);
 		//
@@ -52,7 +58,7 @@ NTSTATUS HyperWinCreate(IN PDEVICE_OBJECT pDeviceObj, IN PIRP Irp)
 		pData->VirtualReadPipe = MmMapIoSpace(pa, LARGE_PAGE_SIZE, MmCached);
 		KeReleaseSpinLock(&(pData->WritePipeSpinlock), OldIrql);
 	}
-
+Mapped:
 	return NtStatus;
 }
 
@@ -78,6 +84,7 @@ NTSTATUS HyperWinDeviceIoControl(IN PDEVICE_OBJECT pDeviceObj, IN PIRP Irp)
 			else
 				pData->CurrentWriteOffset = 0;
 			KeReleaseSpinLock(&(pData->WritePipeSpinlock), Irql);
+
 			RtlCopyMemory(pData->VirtualWritePipe + pData->CurrentWriteOffset, 
 					SystemBuffer, pStackLocation->Parameters.DeviceIoControl.InputBufferLength);
 			if(ComSendSignal(pData->CurrentWriteOffset) != HYPERWIN_STATUS_SUCCUESS)
@@ -88,11 +95,12 @@ NTSTATUS HyperWinDeviceIoControl(IN PDEVICE_OBJECT pDeviceObj, IN PIRP Irp)
 			//
 			// HypeWin sent a response?
 			//
+
 			DWORD64 ReadOffset = 0;
-			if ((ReadOffset = *(DWORD64_PTR)(pData->VirtualWritePipe + pData->CurrentWriteOffset))
+			if ((ReadOffset = *(DWORD64_PTR)(pData->VirtualWritePipe + pData->CurrentWriteOffset + sizeof(OPERATION)))
 				!= OPERATION_COMPLETED)
 			{
-				DWORD64 ReadLength = *(DWORD64_PTR)(pData->VirtualWritePipe + pData->CurrentWriteOffset + sizeof(DWORD64));
+				DWORD64 ReadLength = *(DWORD64_PTR)(pData->VirtualWritePipe + pData->CurrentWriteOffset + 2 * sizeof(DWORD64));
 				RtlCopyMemory(pData->VirtualReadPipe + ReadOffset, SystemBuffer, ReadLength);
 				Irp->IoStatus.Information = ReadLength;
 			}

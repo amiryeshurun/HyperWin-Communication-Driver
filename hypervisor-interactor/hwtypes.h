@@ -5,6 +5,7 @@
 
 #define HWSTATUS DWORD64
 
+typedef DWORD64 OPERATION, * POPERATION;
 typedef unsigned char BYTE, * BYTE_PTR;
 typedef DWORD64* DWORD64_PTR;
 

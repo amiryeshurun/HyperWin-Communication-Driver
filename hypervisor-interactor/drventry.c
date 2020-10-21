@@ -29,8 +29,7 @@ NTSTATUS DriverEntry(IN PDRIVER_OBJECT pDriverObj, IN PUNICODE_STRING RegPath)
 	UNREFERENCED_PARAMETER(RegPath);
 	hvPrint("Loading driver...\n");
 	RtlInitUnicodeString(&deviceName, L"\\Device\\HyperWin");
-	RtlInitUnicodeString(&dosDeviceName, L"\\DosDevice\\HyperWin");
-	IoCreateSymbolicLink(&dosDeviceName, &deviceName);
+	RtlInitUnicodeString(&dosDeviceName, L"\\DosDevices\\HyperWin");
 
 	PDEVICE_OBJECT pDeviceObject;
 
@@ -45,6 +44,7 @@ NTSTATUS DriverEntry(IN PDRIVER_OBJECT pDriverObj, IN PUNICODE_STRING RegPath)
 		hvPrint("Could not create a device\n");
 		return STATUS_FAILED_DRIVER_ENTRY;
 	}
+	IoCreateSymbolicLink(&dosDeviceName, &deviceName);
 	pDeviceObject->Flags &= (~DO_DEVICE_INITIALIZING);
 
 	for (DWORD64 i = 0; i < IRP_MJ_MAXIMUM_FUNCTION; i++)
