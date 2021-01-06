@@ -70,40 +70,44 @@ NTSTATUS HyperWinDeviceIoControl(IN PDEVICE_OBJECT pDeviceObj, IN PIRP Irp)
 	PIO_STACK_LOCATION pStackLocation = IoGetCurrentIrpStackLocation(Irp);
 	PHYPERWIN_MAIN_DATA pData = (PHYPERWIN_MAIN_DATA)pDeviceObj->DeviceExtension;
 	PVOID SystemBuffer = Irp->AssociatedIrp.SystemBuffer;
+	DWORD64 SavedWriteOffset, ReadOffset = 0, ReadLength;
+	KIRQL Irql;
+	HWSTATUS HwStatus;
 
 	switch (pStackLocation->Parameters.DeviceIoControl.IoControlCode)
 	{
 		case CTL_CODE_HW:
 		{
 			hvPrint("Received ctl code: %xl\n", CTL_CODE_HW);
-			KIRQL Irql;
 			KeAcquireSpinLock(&(pData->WritePipeSpinlock), &Irql);
 			if (pData->CurrentWriteOffset + pStackLocation->Parameters.DeviceIoControl.InputBufferLength <
 				pData->WritePipeSize)
 				pData->CurrentWriteOffset += pStackLocation->Parameters.DeviceIoControl.InputBufferLength;
 			else
 				pData->CurrentWriteOffset = 0;
+			SavedWriteOffset = pData->CurrentWriteOffset;
 			KeReleaseSpinLock(&(pData->WritePipeSpinlock), Irql);
 
 			RtlCopyMemory(pData->VirtualWritePipe + pData->CurrentWriteOffset, 
 					SystemBuffer, pStackLocation->Parameters.DeviceIoControl.InputBufferLength);
-			if(ComSendSignal(pData->CurrentWriteOffset) != HYPERWIN_STATUS_SUCCUESS)
-			{
-				NtStatus = STATUS_FAIL_FAST_EXCEPTION;
+			HwStatus = ComSendSignal(pData->CurrentWriteOffset);
+			*(DWORD64_PTR)(pData->VirtualWritePipe + SavedWriteOffset) = HwStatus;
+			hvPrint("Operation status: %lld\n", HwStatus);
+			if(HwStatus != HYPERWIN_STATUS_SUCCUESS)
 				goto DeviceIoControlExit;
-			}
 			//
 			// HypeWin sent a response?
 			//
-
-			DWORD64 ReadOffset = 0;
-			if ((ReadOffset = *(DWORD64_PTR)(pData->VirtualWritePipe + pData->CurrentWriteOffset + sizeof(OPERATION)))
-				!= OPERATION_COMPLETED)
+			if ((ReadOffset = *(DWORD64_PTR)(pData->VirtualWritePipe + SavedWriteOffset + 
+				sizeof(OPERATION))) != OPERATION_COMPLETED)
 			{
-				DWORD64 ReadLength = *(DWORD64_PTR)(pData->VirtualWritePipe + pData->CurrentWriteOffset + 2 * sizeof(DWORD64));
-				RtlCopyMemory(pData->VirtualReadPipe + ReadOffset, SystemBuffer, ReadLength);
-				Irp->IoStatus.Information = ReadLength;
+				ReadLength = *(DWORD64_PTR)(pData->VirtualWritePipe + pData->CurrentWriteOffset 
+					+ 2 * sizeof(DWORD64));
+				RtlCopyMemory(pData->VirtualReadPipe + ReadOffset, (BYTE_PTR)SystemBuffer +
+						sizeof(HWSTATUS), ReadLength);
+				Irp->IoStatus.Information = ReadLength + sizeof(HWSTATUS);
 			}
+
 			break;
 		}
 		default:
