@@ -91,7 +91,8 @@ NTSTATUS HyperWinDeviceIoControl(IN PDEVICE_OBJECT pDeviceObj, IN PIRP Irp)
 			RtlCopyMemory(pData->VirtualWritePipe + pData->CurrentWriteOffset, 
 					SystemBuffer, pStackLocation->Parameters.DeviceIoControl.InputBufferLength);
 			HwStatus = ComSendSignal(pData->CurrentWriteOffset);
-			*(DWORD64_PTR)(pData->VirtualWritePipe + SavedWriteOffset) = HwStatus;
+			*(DWORD64_PTR)(SystemBuffer) = HwStatus;
+			Irp->IoStatus.Information = sizeof(HWSTATUS);
 			hvPrint("Operation status: %lld\n", HwStatus);
 			if(HwStatus != HYPERWIN_STATUS_SUCCUESS)
 				goto DeviceIoControlExit;
@@ -105,7 +106,7 @@ NTSTATUS HyperWinDeviceIoControl(IN PDEVICE_OBJECT pDeviceObj, IN PIRP Irp)
 					+ 2 * sizeof(DWORD64));
 				RtlCopyMemory(pData->VirtualReadPipe + ReadOffset, (BYTE_PTR)SystemBuffer +
 						sizeof(HWSTATUS), ReadLength);
-				Irp->IoStatus.Information = ReadLength + sizeof(HWSTATUS);
+				Irp->IoStatus.Information += ReadLength;
 			}
 
 			break;
